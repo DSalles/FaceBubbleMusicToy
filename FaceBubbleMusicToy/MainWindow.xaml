@@ -1,0 +1,11 @@
+﻿<Window x:Class="FaceBubbleMusicToy.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="clr-namespace:FaceBubbleMusicToy"
+        Title="MainWindow" Height="720" Width="1280">
+    <Grid Name ="layoutGrid">
+        <Grid Name="MainGrid">
+            <local:FaceTrackingViewer x:Name="faceTrackingViewer" />
+        </Grid>
+    </Grid>
+</Window>
