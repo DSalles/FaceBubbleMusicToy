@@ -12,13 +12,12 @@ using System.Threading;
 
 
 namespace FaceBubbleMusicToy
-{
-    
+{    
     class SoundSource
     {
         static SoundSource defaultSource = null;
         SlimDX.DirectSound.DirectSound device;
-        SlimDX.DirectSound.SecondarySoundBuffer sBuffer;
+        public SlimDX.DirectSound.SecondarySoundBuffer sBuffer;
         SlimDX.Multimedia.WaveFormat waveFormat = new SlimDX.Multimedia.WaveFormat();
         SlimDX.DirectSound.SoundBufferDescription bufferDescription;
         SlimDX.DirectSound.Capabilities buffercaP; 
@@ -35,17 +34,12 @@ namespace FaceBubbleMusicToy
         static long samples;
         BufferFlags bflags = new BufferFlags();
 
-
-
  byte[] byteBuffer = new byte[1024];
-
-
 
         internal static SoundSource getDefaultSource()
         {
                 if (defaultSource == null)
-                    defaultSource = new SoundSource();
-            
+                    defaultSource = new SoundSource();            
                 return defaultSource;
         }
 
@@ -84,15 +78,13 @@ namespace FaceBubbleMusicToy
         public void RecordAudio()
         {
             BubbleList.DesignateInputStream(inputStream);
-            Console.WriteLine("SoundSource_recordAudio");
+           // Console.WriteLine("SoundSource_recordAudio");
             var t = new Thread(new ParameterizedThreadStart((Record)));
             t.Start();
          
-                     recordingLength = amountOfTimeToRecord * 2 * 16000;
+                     recordingLength = amountOfTimeToRecord * 2 * 16000;           
            
-           
-           WriteWavHeader(inputStream, recordingLength);             
-            
+           WriteWavHeader(inputStream, recordingLength);                         
          
         }
 
@@ -109,8 +101,7 @@ namespace FaceBubbleMusicToy
                 }
             samples = totalCount;
             FinishedRecording();
-            
-           
+                       
         }
 
         public SecondarySoundBuffer GetSound(MemoryStream inputStream)
@@ -127,7 +118,6 @@ namespace FaceBubbleMusicToy
             {
                 WriteWavHeader(outputStream, recordingLength);
                 inputStream.Position = 0;
-
 
                 using (WaveFileReader reader = new WaveFileReader(inputStream))
                 {

@@ -19,7 +19,7 @@ namespace FaceBubbleMusicToy
     {
         DirectSound device;
         public Image faceImage = new Image();
-        BitmapImage image = new BitmapImage(new Uri("C:\\Users\\Diana\\Documents\\Games\\FaceBubbles\\FaceBubbles\\Images\\bubble.png"));
+        BitmapImage image = new BitmapImage(new Uri("C:\\Users\\diana_000\\Documents\\Games\\FaceBubbles\\FaceBubbles\\Images\\bubble.png"));
         long faceFrameTime;
         FacesList faceImages;
         int lastFrame;
@@ -101,17 +101,18 @@ namespace FaceBubbleMusicToy
 
       internal void  WindingUp()
         {
-      //    spawnList.Add(new Bubble(this.sBuffer,this.sBuffer.Frequency, device,  (new Thickness(lastFrame*2+this.Margin.Left, lastFrame*2+this.Margin.Top, 0,0)), faceImages, faceFrameTime, samples,mainGrid));
+          //spawnList.Add(new Bubble(this.sBuffer,this.sBuffer.Frequency, device,  (new Thickness(lastFrame*2+this.Margin.Left, lastFrame*2+this.Margin.Top, 0,0)), faceImages, faceFrameTime, samples,mainGrid));
           //this.mainGrid.Children.Add(spawnList[spawnList.Count - 1]);  
           int volume = this.sBuffer.Volume;
-            int width = (int)this.Width;
-            
+            int width = (int)this.Width;            
             StartedWindingDown = false;
             State = "windingUp";
 
             if (sBuffer.Volume >= 0)
                 sBuffer.Volume = 0;
+
             else
+
                 volume += 1000;
             if (width <= 500)
                 width += 10;
@@ -182,8 +183,7 @@ namespace FaceBubbleMusicToy
               if (this.Width >= 110)
                   width -= (int)((this.Width - 110) / (lastFrame));
               volume -= (volume + 1000) / lastFrame;
-              lastFrame -= 1;
-         
+              lastFrame -= 1;         
 
           UpdateAnimation(width, volume, lastFrame);
           }
@@ -268,8 +268,7 @@ namespace FaceBubbleMusicToy
                     }
                 }
             }
-        }
-              
+        }              
 
    internal void PlayFaceFrames(int endFrame, int endPosition)
       {
@@ -324,6 +323,8 @@ namespace FaceBubbleMusicToy
       {
           //sBuffer.Stop();
           //if(sBuffer.Status != BufferStatus.Playing)
+          this.mainGrid.Children.Remove(faceImage);
+          this.mainGrid.Children.Remove(this);
           expired = true;
           sBuffer.Dispose();
       }

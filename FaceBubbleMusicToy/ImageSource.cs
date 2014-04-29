@@ -24,7 +24,7 @@ namespace FaceBubbleMusicToy
        int colorDepth = 4;
        private FaceTrackingViewer faceTrackingViewer;
        public bool Ready = false;
-       private bool Recording = false;
+       public bool Recording = false;
        private static Stopwatch stopwatch;
        private long faceFrameTime;
         
@@ -34,6 +34,10 @@ namespace FaceBubbleMusicToy
                 defaultSource = new ImageSource();
             return defaultSource;
         }
+        internal static void ClearFaces()
+        {
+            facesList.Clear();
+        }
 
         internal FacesList RecordFaces()
         {  
@@ -41,7 +45,6 @@ namespace FaceBubbleMusicToy
             stopwatch.Start();
             Recording = true;
             return facesList;
-
         }
 
         internal void initialize(FaceTrackingViewer faceTrackingViewer)

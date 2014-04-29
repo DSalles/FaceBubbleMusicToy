@@ -51,7 +51,7 @@ namespace FaceBubbleMusicToy
         private Skeleton[] skeletonData;
         public Point leftHandPosition;
         public Point rightHandPosition;
-        public Point headPosition;
+        public Point chestPosition;
 
         public FaceTrackingViewer()
         {
@@ -170,7 +170,7 @@ namespace FaceBubbleMusicToy
 
                         leftHandPosition = new Point(skeleton.Joints[JointType.HandLeft].Position.X*-1, skeleton.Joints[JointType.HandLeft].Position.Y);
                         rightHandPosition = new Point(skeleton.Joints[JointType.HandRight].Position.X*-1, skeleton.Joints[JointType.HandRight].Position.Y);
-                        headPosition = new Point(skeleton.Joints[JointType.Head].Position.X * -1, skeleton.Joints[JointType.Head].Position.Y);
+                        chestPosition = new Point(skeleton.Joints[JointType.ShoulderCenter].Position.X * -1, skeleton.Joints[JointType.ShoulderCenter].Position.Y);
                         // Give each tracker the upated frame.
                         SkeletonFaceTracker skeletonFaceTracker;
                      

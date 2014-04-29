@@ -24,8 +24,7 @@ namespace FaceBubbleMusicToy
     using ShaderEffectsLibrary;
     using System.Windows.Media.Animation;
     using System.Diagnostics;
-
-
+    
     /// <summary>
     /// Interaction logic for Designer.xaml
     /// </summary>
@@ -35,8 +34,6 @@ namespace FaceBubbleMusicToy
         private static readonly int Bgra32BytesPerPixel = (PixelFormats.Bgra32.BitsPerPixel + 7) / 8;
         private readonly KinectSensorChooser sensorChooser = new KinectSensorChooser();
 
-        private byte[] invisibleColorData;
-        private int faceImageSize = 192;
         private const int AudioPollingInterval = 50;
         private const int SamplesPerMillisecond = 16;
         private const int BytesPerSample = 2;
@@ -45,45 +42,40 @@ namespace FaceBubbleMusicToy
         Ellipse LHand = new Ellipse();
         Ellipse RHand = new Ellipse();
         Stream audioStream;
-       
+        ImageSource imageSource;
         public MainWindow()
         {
 
             this.Background = Brushes.Black;
          
             InitializeComponent();
-            invisibleColorData = new byte[faceImageSize * 4 * faceImageSize];
-            for (int i = 0; i < invisibleColorData.Length; i++)
-            {
-                invisibleColorData[i] = 0;
-            }
+            imageSource = ImageSource.GetDefaultSource();
+
 
             var faceTrackingViewerBinding = new Binding("Kinect") { Source = sensorChooser };
             faceTrackingViewer.SetBinding(FaceTrackingViewer.KinectProperty, faceTrackingViewerBinding);
             sensorChooser.KinectChanged += SensorChooserOnKinectChanged;
             sensorChooser.Start();
-            ImageSource.GetDefaultSource().initialize(faceTrackingViewer);
-            MouseWheel += mouseWheeled;
+            imageSource.initialize(faceTrackingViewer);
+           // MouseWheel += mouseWheeled;
 
             spotlight.Width = 100;
             spotlight.Height = 100;
-            spotlight.Fill = Brushes.White;
+            spotlight.Fill = Brushes.Gray;
             LHand.Width = 60;
             LHand.Height = 60;
-            LHand.Fill = Brushes.Red;
+            LHand.Fill = Brushes.Blue;
             RHand.Width = 60;
             RHand.Height = 60;
             RHand.Fill = Brushes.Blue;
-            Ellipse testEllipse = new Ellipse();
-            
-          spotlight.Margin = new Thickness(0, 0, 0, 0);
-                LHand.Margin = new Thickness(0, 0, 0, 0);
-               RHand.Margin = new Thickness(0, 0, 0, 0);
-                 this.MainGrid.Children.Add(spotlight);
-              this.MainGrid.Children.Add(LHand);
-              this.MainGrid.Children.Add(RHand);
+            Ellipse testEllipse = new Ellipse();            
+            spotlight.Margin = new Thickness(0, 0, 0, 0);
+            LHand.Margin = new Thickness(0, 0, 0, 0);
+            RHand.Margin = new Thickness(0, 0, 0, 0);
+            this.MainGrid.Children.Add(spotlight);
+            this.MainGrid.Children.Add(LHand);
+            this.MainGrid.Children.Add(RHand);
         }
-
 
         void MainWindow_FinishedRecording(object sender, RoutedEventArgs e)
         {
@@ -117,7 +109,7 @@ namespace FaceBubbleMusicToy
                     {
                         // This will throw on non Kinect For Windows devices.
                         newSensor.DepthStream.Range = DepthRange.Default;
-                       // newSensor.SkeletonStream.EnableTrackingInNearRange = true;
+                        // newSensor.SkeletonStream.EnableTrackingInNearRange = true;
                     }
                     catch (InvalidOperationException)
                     {
@@ -136,7 +128,7 @@ namespace FaceBubbleMusicToy
                     newSensor.SkeletonStream.Enable(smoothingParams);
                     newSensor.AllFramesReady += KinectSensorOnAllFramesReady;
                     audioStream = newSensor.AudioSource.Start();
-                       SoundSource.getDefaultSource().initialize(audioStream);
+                    SoundSource.getDefaultSource().initialize(audioStream);
 
                 }
                 catch (InvalidOperationException)
@@ -160,11 +152,11 @@ namespace FaceBubbleMusicToy
             sensorChooser.Stop();
             foreach (Bubble b in bubbleList)
                 b.Pop();
+            bubbleList.Clear();
         }
 
         private void KinectSensorOnAllFramesReady(object sender, AllFramesReadyEventArgs allFramesReadyEventArgs)
         {
-
             using (var colorImageFrame = allFramesReadyEventArgs.OpenColorImageFrame())
             {
                 if (colorImageFrame == null)
@@ -173,51 +165,69 @@ namespace FaceBubbleMusicToy
                 }
                 if (faceTrackingViewer.FaceBeingTracked)
                 {
-                    ImageSource.GetDefaultSource().FaceTrackedColorFrameReady(colorImageFrame);
+                    imageSource.FaceTrackedColorFrameReady(colorImageFrame);
                 }
             }
-            // sending the point to intercect with bubbles from same object which processes the kinect skeleton
-          if (ImageSource.GetDefaultSource().Ready)
+            // sending the point to intersect with bubbles from same object which processes the kinect skeleton
+          if (imageSource.Ready)
           {
               makeBubbles();
-              spotlight.Fill = Brushes.Black;
-              LHand.Fill = Brushes.Black;
-              RHand.Fill = Brushes.Black;
+              if (imageSource.Recording)
+              {
+                  spotlight.Fill = Brushes.Red;
+                  LHand.Fill = Brushes.DarkSlateGray;
+                  RHand.Fill = Brushes.DarkSlateGray;
+              }
+              else
+              {
+                  spotlight.Fill = Brushes.Black;                 
+              }
           }
           updateBubbles(new Point(faceTrackingViewer.leftHandPosition.X * 1400, faceTrackingViewer.leftHandPosition.Y * -1300 + 100), new Point(faceTrackingViewer.rightHandPosition.X * 1400, faceTrackingViewer.rightHandPosition.Y * -1300 + 100));
-          spotlight.Margin = new Thickness(faceTrackingViewer.headPosition.X * 1400, faceTrackingViewer.headPosition.Y * -1300 + 100,0,0);
+          spotlight.Margin = new Thickness(faceTrackingViewer.chestPosition.X * 1400, faceTrackingViewer.chestPosition.Y * -1300 + 100,0,0);
 
            LHand.Margin = new Thickness(faceTrackingViewer.leftHandPosition.X * 1400, faceTrackingViewer.leftHandPosition.Y*-1300+100, 0,0);
-         RHand.Margin = new Thickness(faceTrackingViewer.rightHandPosition.X * 1400, faceTrackingViewer.rightHandPosition.Y * -1300+100, 0, 0);
+           RHand.Margin = new Thickness(faceTrackingViewer.rightHandPosition.X * 1400, faceTrackingViewer.rightHandPosition.Y * -1300+100, 0, 0);
         }              
 
         private void updateBubbles(Point LHand, Point RHand)
         {
-            if( bubbleList ==null || bubbleList.Count ==0)
-              bubbleList = BubbleList.GetDefaultBubbleList().MakeBubbles();
-          else
-              foreach (Bubble b in bubbleList)
-           b.Update(LHand, RHand);
+            if (bubbleList == null || bubbleList.Count == 0)
+                bubbleList = BubbleList.GetDefaultBubbleList().MakeBubbles();
+            else
+            { 
+                foreach (Bubble b in bubbleList)
+                    b.Update(LHand, RHand);
+            }
         }
       
-        private bool enableMakeBubbles = true;
-
-        private void mouseWheeled(object sender, System.Windows.Input.MouseWheelEventArgs e)
-        {
-            makeBubbles();
-        }        
+        private bool enableMakeBubbles = true;          
 
         private void makeBubbles()
         {
-            if (SoundSource.getDefaultSource().Ready && ImageSource.GetDefaultSource().Ready)
+            if (SoundSource.getDefaultSource().Ready && imageSource.Ready)
             {
                 if (enableMakeBubbles)
                 {
                     enableMakeBubbles = false;
                     BubbleList.RecordMediaForBubbles(this.MainGrid);
                 }
-            }
-         
+            }         
+        }
+
+        private void Window_KeyDown(object sender, KeyEventArgs e)
+        {      
+           ImageSource.ClearFaces();
+           SoundSource.getDefaultSource().sBuffer.Dispose();
+           for(int i = 0; i < bubbleList.Count; i++)
+           {
+               bubbleList[i].Pop();
+               bubbleList[i] = null;
+           }
+           bubbleList.Clear(); 
+           bubbleList = null;  
+            enableMakeBubbles = true;
+            makeBubbles();
         }
     }
 }
